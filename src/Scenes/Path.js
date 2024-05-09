@@ -47,7 +47,7 @@ class Path extends Phaser.Scene {
 
         // TODO:
         //  - set the run mode flag to false (after implenting run mode)
-
+        this.runMode = false;
         // Create enemyShip as a follower type of sprite
         // Call startFollow() on enemyShip to have it follow the curve
         my.sprite.enemyShip = this.add.follower(this.curve, 10, 10, "enemyShip");
@@ -90,12 +90,14 @@ class Path extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(this.ESCKey)) {
             console.log("Clear path");
+
+            if (!this.runMode) {
+                this.clearPoints();
+            }
             // TODO: 
             // * Add code to check if run mode is active
             //   If run mode is active, then don't call clearPoints()
             //   (i.e., can only clear points when not in run mode)
-
-            this.clearPoints();
 
         }
 
@@ -103,7 +105,12 @@ class Path extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(this.oKey)) {
             console.log("Output the points");
+            console.log("[");
 
+            for (let point of this.curve.points) {
+                console.log("%d, %d,", point.x, point.y);
+            }
+            console.log("]");
             // TODO:
             // * Print out the points comprising the line
             //   use a "for ... of" loop to iterate through the
@@ -119,6 +126,33 @@ class Path extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
             console.log("Run mode");
+
+            if (this.runMode == true) {
+                my.sprite.enemyShip.stopFollow();
+                my.sprite.enemyShip.visible = false;
+                this.runMode = false;
+            } else {
+                if (this.curve.points[0] ) {
+                    this.runMode = true;
+                    my.sprite.enemyShip.x = this.curve.points[0].x;
+                    my.sprite.enemyShip.y = this.curve.points[0].y;
+                    my.sprite.enemyShip.visible = true;
+                    let argumetns = {
+                            from: 0,
+                            to: 1,
+                            delay: 0,
+                            duration: 2000,
+                            ease: 'Sine.easeInOut',
+                            repeat: -1,
+                            yoyo: true,
+                            rotateToPath: true,
+                            rotationOffset: -90
+                        }
+                    my.sprite.enemyShip.startFollow(argumetns);
+                }
+                
+            }
+
             //
             // TODO: 
             // Implement run mode
